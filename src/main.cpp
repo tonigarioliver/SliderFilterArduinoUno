@@ -1,11 +1,9 @@
 #include <Arduino.h>
 #include <Ethernet.h>
 #include <EthernetServers.h>
-#define inMotion 5
-#define backward 6
-#define forward 7
-#define mode 8
-#define timedelay 4000
+#include <define.h>
+#include <Functions.h>
+
 int motion_status;
 int next_position = 0;
 
@@ -20,46 +18,6 @@ int numServers = sizeof(servers) / sizeof(servers[0]);
 EthernetServers Servers(buffersize, numServers);
 String *serveroutput;
 
-void parseResponse()
-{
-  for (int i = 0; i < numServers; i++)
-  {
-    char receivedChars[query[i].length() + 1];
-    strcpy(receivedChars, query[i].c_str());
-    char *command = strtok(receivedChars, ",");
-    String action = String(command);
-    command = strtok(NULL, ",");
-    String parameter = String(command);
-    command = strtok(NULL, ",");
-    int num = String(command).toInt();
-    command = strtok(NULL, ",");
-    String feature = String(command);
-    if (action == "get")
-    {
-      command = strtok(NULL, ",");
-      if (parameter == "slider")
-      {
-        if (feature == "status")
-        {
-          serveroutput[i] = "<get,slider," + (String(num)) + ",status," + String(motion_status) + ">" + "\r\n";
-        }
-        else if (feature == "position")
-        {
-          serveroutput[i] = "<get,slider," + (String(num)) + ",position," + String(next_position) + ">" + "\r\n";
-        }
-      }
-    }
-    else if (action == "set")
-    {
-      if (parameter == "slider")
-      {
-        command = strtok(NULL, ",");
-        next_position = String(command).toInt();
-        serveroutput[i] = "<set,slider," + (String(num)) + ",position," + String(next_position) + ">" + "\r\n";
-      }
-    }
-  }
-}
 
 void setup()
 {
@@ -89,7 +47,7 @@ void loop()
   {
     delete[] serveroutput;
     serveroutput = new String[numServers];
-    parseResponse();
+    parseResponse(numServers,query,serveroutput,motion_status,next_position);
     Servers.sendreply(servers, serveroutput);
     if (next_position == 0)
     {

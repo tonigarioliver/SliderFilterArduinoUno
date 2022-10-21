@@ -8,7 +8,7 @@ private:
     byte bufferSize = 127;
     boolean *newData;
     char *command = NULL;
-    int numServers = NULL;
+    int numServers = 0;
     String *query;
 
 public:
