@@ -1,12 +1,11 @@
 #include <Arduino.h>
 #include <Ethernet.h>
 #include <EthernetServers.h>
-#include <define.h>
-#include <Functions.h>
+#include "define.h"
+#include "Functions.h"
 
 int motion_status;
 int next_position = 0;
-
 String *query;
 boolean *newData;
 ////////////////Ethernet MAC for DHCP
@@ -17,7 +16,6 @@ EthernetServer servers[] = {EthernetServer(80), EthernetServer(8080), EthernetSe
 int numServers = sizeof(servers) / sizeof(servers[0]);
 EthernetServers Servers(buffersize, numServers);
 String *serveroutput;
-
 
 void setup()
 {
@@ -47,7 +45,7 @@ void loop()
   {
     delete[] serveroutput;
     serveroutput = new String[numServers];
-    parseResponse(numServers,query,serveroutput,motion_status,next_position);
+    parseResponse(numServers, query, serveroutput, &motion_status, &next_position);
     Servers.sendreply(servers, serveroutput);
     if (next_position == 0)
     {

@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include <Functions.h>
 
-void parseResponse(int numServers,String query[], String serveroutput[], int motion_status,int next_position)
+void parseResponse(int numServers,String queries[], String server_output[], int *motionstatus,int *nextposition)
 {
   for (int i = 0; i < numServers; i++)
   {
-    char receivedChars[query[i].length() + 1];
-    strcpy(receivedChars, query[i].c_str());
+    char receivedChars[queries[i].length() + 1];
+    strcpy(receivedChars, queries[i].c_str());
     char *command = strtok(receivedChars, ",");
     String action = String(command);
     command = strtok(NULL, ",");
@@ -22,11 +22,11 @@ void parseResponse(int numServers,String query[], String serveroutput[], int mot
       {
         if (feature == "status")
         {
-          serveroutput[i] = "<get,slider," + (String(num)) + ",status," + String(motion_status) + ">" + "\r\n";
+          server_output[i] = "<get,slider," + (String(num)) + ",status," + String(*motionstatus) + ">" + "\r\n";
         }
         else if (feature == "position")
         {
-          serveroutput[i] = "<get,slider," + (String(num)) + ",position," + String(next_position) + ">" + "\r\n";
+          server_output[i] = "<get,slider," + (String(num)) + ",position," + String(*nextposition) + ">" + "\r\n";
         }
       }
     }
@@ -35,8 +35,8 @@ void parseResponse(int numServers,String query[], String serveroutput[], int mot
       if (parameter == "slider")
       {
         command = strtok(NULL, ",");
-        next_position = String(command).toInt();
-        serveroutput[i] = "<set,slider," + (String(num)) + ",position," + String(next_position) + ">" + "\r\n";
+        *nextposition = String(command).toInt();
+        server_output[i] = "<set,slider," + (String(num)) + ",position," + String(*nextposition) + ">" + "\r\n";
       }
     }
   }
