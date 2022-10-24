@@ -45,7 +45,7 @@ void loop()
   {
     delete[] serveroutput;
     serveroutput = new String[numServers];
-    parseResponse(numServers, query, serveroutput, &next_position, &motion_status);
+    parseResponse(numServers, query, serveroutput, next_position, motion_status);
     Servers.sendreply(servers, serveroutput);
     if (next_position == 0)
     {
